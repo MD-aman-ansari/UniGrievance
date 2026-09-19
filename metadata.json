@@ -1,0 +1,6 @@
+{
+  "name": "Student Complaint & Service Management System",
+  "description": "A full-stack learning application for lodging, tracking, and resolving student complaints with role-based access control and security best practices.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

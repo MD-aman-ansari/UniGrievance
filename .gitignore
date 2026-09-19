@@ -1,0 +1,119 @@
+# ==============================================================================
+# Git Ignore Configuration
+# Student Complaint & Service Management System
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. CRITICAL: Environment Variables, Credentials, and Secrets
+# ------------------------------------------------------------------------------
+# Never commit real credentials, database strings, or API secrets to GitHub!
+.env
+.env.*
+*.env
+.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Whitelist safe template documentation file
+!.env.example
+
+# SSL / TLS / Cryptographic Private Keys and Certificates
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.asc
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# ------------------------------------------------------------------------------
+# 2. Dependencies and Package Manager Caches
+# ------------------------------------------------------------------------------
+node_modules/
+jspm_packages/
+web_modules/
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ------------------------------------------------------------------------------
+# 3. Production Build Artifacts and Generated Bundles
+# ------------------------------------------------------------------------------
+dist/
+build/
+out/
+dist-ssr/
+*.tsbuildinfo
+.vite/
+server.js
+
+# ------------------------------------------------------------------------------
+# 4. User Uploads and Temporary Files (Prevent Committing User Data)
+# ------------------------------------------------------------------------------
+# Ignore uploaded attachments, but preserve sample seed demonstration files
+backend/uploads/attachments/*
+!backend/uploads/attachments/att_seed_*
+!backend/uploads/attachments/.gitkeep
+
+# Temporary and quarantine files
+*.tmp
+*.temp
+temp_*
+*.swp
+*.swo
+
+# ------------------------------------------------------------------------------
+# 5. Diagnostic Logs and Crash Reports
+# ------------------------------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------------------------------------------------------------
+# 6. Operating System Artifacts
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# ------------------------------------------------------------------------------
+# 7. IDE & Code Editor Workspaces
+# ------------------------------------------------------------------------------
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ------------------------------------------------------------------------------
+# 8. Test Coverage and Tooling Caches
+# ------------------------------------------------------------------------------
+coverage/
+.nyc_output/
+.eslintcache
+.stylelintcache
+
