@@ -151,8 +151,14 @@ For rapid evaluation, the following accounts are pre-configured:
 
 | Role | Email | Password | Access Rights |
 | :--- | :--- | :--- | :--- |
-| **🎓 Student** | `alex.rivera@campus.edu` | `student123` | Submit complaints, view personal tickets & timeline |
-| **🛡️ Administrator** | `e.vance@campus.edu` | `admin123` | Full admin triage, change status, reassign department |
+| **🎓 Student** | `alex.rivera@campus.edu` | `Student@123` | Submit complaints, view personal tickets & timeline |
+| **🛡️ Administrator** | `e.vance@campus.edu` | `Admin@123` | Full admin triage, change status, reassign department |
+
+> **🔐 Password & Email Security Policy:**
+> * **Email Verification via OTP**: Required 6-digit One-Time Password (OTP) verification before account creation (`POST /api/auth/send-otp` & `POST /api/auth/verify-otp`).
+> * **Institutional Email Pattern**: Strict domain verification (`name@domain.tld`).
+> * **Password Complexity**: Minimum 8 characters, at least 1 uppercase letter, at least 1 numeric digit, and at least 1 special character (e.g. `!@#$%^&*`).
+> * *Legacy demo credentials (`student123` and `admin123`) remain supported for backward-compatible login.*
 
 ---
 

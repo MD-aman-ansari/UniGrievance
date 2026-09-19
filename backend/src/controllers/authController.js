@@ -11,6 +11,7 @@
  */
 
 import * as authService from '../services/authService.js';
+import * as otpService from '../services/otpService.js';
 import { 
   SESSION_COOKIE_NAME, 
   getSecureCookieOptions, 
@@ -24,13 +25,14 @@ import {
  */
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, otp } = req.body;
 
     const result = await authService.registerUser({
       name,
       email,
       password,
       role: role || 'student',
+      otp,
     });
 
     // Level 8: Set secure HttpOnly session cookie
@@ -152,3 +154,77 @@ export const getProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * POST /api/auth/send-otp
+ * Generates and sends a 6-digit OTP to the user's Gmail / email address.
+ */
+export const sendOtp = async (req, res, next) => {
+  try {
+    const { email, checkDuplicate = false } = req.body;
+    const strictEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!email || typeof email !== 'string' || !strictEmailRegex.test(email.trim()) || email.includes('..')) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Email',
+        message: 'Please provide a valid email address (e.g., student@gmail.com or name@campus.edu).',
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // If requested or registering, check if user already exists
+    if (checkDuplicate) {
+      const exists = await authService.checkEmailExists(normalizedEmail);
+      if (exists) {
+        return res.status(409).json({
+          success: false,
+          error: 'Account Exists',
+          message: `An account with ${normalizedEmail} is already registered. Please log in instead.`,
+        });
+      }
+    }
+
+    const result = await otpService.generateAndSendOtp(normalizedEmail);
+    return res.status(200).json({
+      success: true,
+      message: `A 6-digit verification code has been dispatched to ${result.email}. Please check your email inbox.`,
+      data: {
+        email: result.email,
+        expiresInSeconds: result.expiresInSeconds,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/auth/verify-otp
+ * Verifies submitted 6-digit OTP code against the stored email record.
+ */
+export const verifyOtp = (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing Parameters',
+        message: 'Both email and verification OTP code are required.',
+      });
+    }
+
+    const result = otpService.verifyOtpCode(email, otp);
+    return res.status(200).json({
+      success: true,
+      message: result.message,
+      data: {
+        email: email.trim().toLowerCase(),
+        verified: true,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

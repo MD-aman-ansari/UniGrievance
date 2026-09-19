@@ -17,7 +17,10 @@ interface AppContextType {
     email: string;
     password: string;
     role?: 'student' | 'admin';
+    otp?: string;
   }) => Promise<{ success: boolean; error?: string }>;
+  sendOtp: (email: string, checkDuplicate?: boolean) => Promise<{ success: boolean; message?: string; error?: string }>;
+  verifyOtp: (email: string, otp: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   loginAs: (role: 'student' | 'admin') => Promise<void>;
   logout: () => void;
   addComplaint: (data: {
@@ -158,7 +161,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       return {
         success: false,
-        error: json.message || json.error || 'Authentication failed. Please check your credentials.',
+        error: Array.isArray(json.errors) && json.errors.length > 0
+          ? json.errors.join(' ')
+          : (json.message || json.error || 'Authentication failed. Please check your credentials.'),
       };
     } catch (err: any) {
       console.warn('Network error during login:', err);
@@ -174,6 +179,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     email: string;
     password: string;
     role?: 'student' | 'admin';
+    otp?: string;
   }): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch(`${API_BASE}/auth/register`, {
@@ -201,10 +207,66 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       return {
         success: false,
-        error: json.message || json.error || 'Registration failed. Please check submitted data.',
+        error: Array.isArray(json.errors) && json.errors.length > 0
+          ? json.errors.join(' ')
+          : (json.message || json.error || 'Registration failed. Please check submitted data.'),
       };
     } catch (err: any) {
       console.warn('Network error during registration:', err);
+      return {
+        success: false,
+        error: 'Unable to reach authentication server. Please try again.',
+      };
+    }
+  };
+
+  const sendOtp = async (email: string, checkDuplicate = false): Promise<{ success: boolean; message?: string; error?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, checkDuplicate }),
+      });
+      const json = await response.json();
+      if (response.ok && json.success) {
+        return {
+          success: true,
+          message: json.message || 'A 6-digit verification code has been dispatched to your email.',
+        };
+      }
+      return {
+        success: false,
+        error: json.message || json.error || 'Failed to send verification code. Please check email address.',
+      };
+    } catch (err: any) {
+      console.warn('Network error during sendOtp:', err);
+      return {
+        success: false,
+        error: 'Unable to reach authentication server. Please try again.',
+      };
+    }
+  };
+
+  const verifyOtp = async (email: string, otp: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      });
+      const json = await response.json();
+      if (response.ok && json.success) {
+        return {
+          success: true,
+          message: json.message || 'Email successfully verified!',
+        };
+      }
+      return {
+        success: false,
+        error: json.message || json.error || 'Invalid verification code. Please try again.',
+      };
+    } catch (err: any) {
+      console.warn('Network error during verifyOtp:', err);
       return {
         success: false,
         error: 'Unable to reach authentication server. Please try again.',
@@ -582,6 +644,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         navigate,
         login,
         register,
+        sendOtp,
+        verifyOtp,
         loginAs,
         logout,
         addComplaint,

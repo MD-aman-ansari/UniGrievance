@@ -18,6 +18,8 @@ import { authRateLimiter } from '../middleware/rateLimiter.js';
 const router = Router();
 
 // Public routes (Level 7: Rate-limited to prevent brute-force attacks and credential stuffing)
+router.post('/send-otp', authRateLimiter, authController.sendOtp);
+router.post('/verify-otp', authRateLimiter, authController.verifyOtp);
 router.post('/register', authRateLimiter, validateRegister, authController.register);
 router.post('/login', authRateLimiter, validateLogin, authController.login);
 router.post('/logout', authController.logout);

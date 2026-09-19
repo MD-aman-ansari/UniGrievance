@@ -234,7 +234,6 @@ export const validateAddComment = (req, res, next) => {
 export const validateRegister = (req, res, next) => {
   const { name, email, password, role } = req.body;
   const errors = [];
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // 1. Name validation
   if (name === undefined || name === null) {
@@ -249,29 +248,59 @@ export const validateRegister = (req, res, next) => {
     errors.push('Full name cannot exceed 100 characters.');
   }
 
-  // 2. Email validation
+  // 2. Email verification (Gmail format)
+  const gmailRegex = /^[a-z0-9][a-z0-9._-]*@gmail\.com$/i;
+
   if (email === undefined || email === null) {
     errors.push('Email address is required.');
   } else if (typeof email !== 'string') {
     errors.push(`Invalid data type for "email". Expected string, received ${typeof email}.`);
-  } else if (email.trim().length === 0) {
-    errors.push('Email address cannot be empty.');
-  } else if (!emailRegex.test(email.trim())) {
-    errors.push('Please provide a valid email address (e.g., student@campus.edu).');
-  } else if (email.trim().length > 255) {
-    errors.push('Email address cannot exceed 255 characters.');
+  } else {
+    const cleanEmail = email.trim();
+
+    if (cleanEmail.length === 0) {
+      errors.push('Email address cannot be empty.');
+    } else if (cleanEmail.length > 254) {
+      errors.push('Email address cannot exceed 254 characters.');
+    } else if (/\s/.test(cleanEmail)) {
+      errors.push('Email address must not contain spaces.');
+    } else if (!gmailRegex.test(cleanEmail)) {
+      errors.push('Invalid email. Use a Gmail address such as student123@gmail.com.');
+    } else if (cleanEmail.includes('..')) {
+      errors.push('Email address cannot contain consecutive dots.');
+    } else if (cleanEmail.includes('__')) {
+      errors.push('Email address cannot contain consecutive underscores.');
+    } else if (cleanEmail.includes('--')) {
+      errors.push('Email address cannot contain consecutive hyphens.');
+    } else {
+      // Normalize email for downstream handlers
+      req.body.email = cleanEmail.toLowerCase();
+    }
   }
 
-  // 3. Password validation
+  // 3. Password security policy
+  // Requirements: at least 8 characters, one capital letter, numeric value, and one special character
   if (password === undefined || password === null) {
     errors.push('Password is required.');
   } else if (typeof password !== 'string') {
     errors.push(`Invalid data type for "password". Expected string, received ${typeof password}.`);
-  } else if (password.length < 6) {
-    errors.push('Password must be at least 6 characters long.');
-  } else if (password.length > 72) {
-    // Bcrypt max length limit is 72 bytes; rejecting longer strings prevents DoS
-    errors.push('Password cannot exceed 72 characters (preventing bcrypt CPU DoS).');
+  } else {
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long.');
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one capital letter (A-Z).');
+    }
+    if (!/[0-9]/.test(password)) {
+      errors.push('Password must contain at least one numeric digit (0-9).');
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      errors.push('Password must contain at least one special character (e.g., !@#$%^&*).');
+    }
+    if (password.length > 72) {
+      // Bcrypt max length limit is 72 bytes; rejecting longer strings prevents DoS
+      errors.push('Password cannot exceed 72 characters (preventing bcrypt CPU DoS).');
+    }
   }
 
   // 4. Role validation (optional, defaults to 'student')
@@ -301,6 +330,7 @@ export const validateRegister = (req, res, next) => {
 export const validateLogin = (req, res, next) => {
   const { email, password } = req.body;
   const errors = [];
+  const strictEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   if (email === undefined || email === null) {
     errors.push('Email is required.');
@@ -308,6 +338,8 @@ export const validateLogin = (req, res, next) => {
     errors.push(`Invalid data type for "email". Expected string, received ${typeof email}.`);
   } else if (email.trim().length === 0) {
     errors.push('Email cannot be empty.');
+  } else if (!strictEmailRegex.test(email.trim()) || email.includes('..')) {
+    errors.push('Email failed verification. Please enter a valid email format.');
   }
 
   if (password === undefined || password === null) {
