@@ -1,11 +1,14 @@
 # 🎓 Student Complaint & Service Management System
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-unigrievance.ai.studio-22c55e?style=for-the-badge&logo=googlechrome&logoColor=white)](https://unigrievance.ai.studio)
 [![React 19](https://img.shields.io/badge/Frontend-React_19-blue?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript_5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js & Express](https://img.shields.io/badge/Backend-Node.js_%26_Express-68A063?style=for-the-badge&logo=node.js)](https://nodejs.org/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL_%2F_Supabase-336791?style=for-the-badge&logo=postgresql)](https://supabase.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![JWT Security](https://img.shields.io/badge/Security-JWT_%2B_bcrypt-orange?style=for-the-badge&logo=json-web-tokens)](https://jwt.io/)
+
+> 🌐 **Live Website:** [https://unigrievance.ai.studio](https://unigrievance.ai.studio)
 
 A modern, full-stack campus grievance redressal and service ticketing platform designed for universities and higher-education institutions. Enables students to submit, track, and resolve academic, hostel, infrastructural, and administrative complaints with end-to-end transparency, role-based authorization, and real-time status updates.
 
@@ -82,6 +85,15 @@ A modern, full-stack campus grievance redressal and service ticketing platform d
 ├── .gitignore                     # Git ignore rules for credentials and uploads
 └── package.json                   # Project dependencies and scripts
 ```
+
+---
+
+## 🌐 Live Application
+
+The project is deployed and accessible online:
+👉 **[https://unigrievance.ai.studio](https://unigrievance.ai.studio)**
+
+Experience the live instance directly to explore both the **Student Grievance Portal** and the **Administrative Command Center** using the pre-configured [Demo Credentials](#-default-demo-accounts).
 
 ---
 
